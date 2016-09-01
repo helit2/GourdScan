@@ -131,7 +131,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 CREATE TABLE IF NOT EXISTS `urlhash` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `hash` varchar(255) DEFAULT '',
+  `url` text,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=gbk AUTO_INCREMENT=6959 ;
 

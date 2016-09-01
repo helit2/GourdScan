@@ -8,8 +8,8 @@ import re
 from hashlib import md5
 from binascii import b2a_base64 as base64_encode
 from urlparse import urlparse as urlps
-import sqlite3
 import hashlib
+import MySQLdb
 #sqlite http://www.cnblogs.com/yuxc/archive/2011/08/18/2143606.html
 hash_size = 199999
 
@@ -171,14 +171,14 @@ class isqlmap:
     def url_hash(self, url):
 
         urlhash = self.parse(url)
-        cx = sqlite3.connect("url.db")
-        cu = cx.cursor()
-        cu.execute("select *  from urlhash where hash = ?", urlhash)
-        if cu.fetchall():
+        conn = MySQLdb.connect(host='localhost', user='sqlmap', passwd='root', db='pscan', port=3306)
+        cur = conn.cursor()
+        cur.execute("select *  from urlhash where hash = ?", urlhash)
+        if cur.fetchall():
             return false
         else:
-            cu.execute("insert into urlhash values ?", (null,urlhash))
-            cx.commit()
+            cur.execute("insert into urlhash values ?", (null,urlhash))
+            conn.commit()
             return true
 
     def extract_request(self,url,method,headers,body):
