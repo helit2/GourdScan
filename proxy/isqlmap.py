@@ -177,7 +177,7 @@ class isqlmap:
         if cu.fetchall():
             return false
         else:
-            cu.execute("insert into urlhash values ?", urlhash)
+            cu.execute("insert into urlhash values ?", (null,urlhash))
             cx.commit()
             return true
 
