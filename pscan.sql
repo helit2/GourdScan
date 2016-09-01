@@ -122,3 +122,20 @@ CREATE TABLE IF NOT EXISTS `users` (
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `urlhash`
+--
+
+CREATE TABLE IF NOT EXISTS `urlhash` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `hash` varchar(255) DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=gbk AUTO_INCREMENT=6959 ;
+
+--
+-- 转存表中的数据 `urlhash`
+--
+
