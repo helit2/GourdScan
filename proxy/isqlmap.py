@@ -130,6 +130,57 @@ class isqlmap:
             self.upload_hash(md5string,taskid)
             return taskid
         return False
+    #url depulication optimization
+    def parse(self, url):
+        tmp = urlps(url)
+        scheme = tmp[0];
+        netloc = tmp[1];
+        path = tmp[2][1:];
+        query = tmp[4]
+        if len(path.split('/')[-1].split('.')) > 1:
+            tail = path.split('/')[-1].split('.')[-1]
+        elif len(path.split('/')) == 1:
+            tail = path
+        else:
+            tail = '1'
+        tail = tail.lower()
+        path_length = len(path.split('/')) - 1
+        path_value = 0
+        path_list = path.split('/')[:-1] + [tail]
+        for i in range(path_length + 1):
+            if path_length - i == 0:
+                path_value += hash(path_list[path_length - i]) % 98765
+            else:
+                path_value += len(path_list[path_length - i]) * (10 ** (i + 1))
+        if len(query) > 0:
+            query_length = len(query.split('&'))
+            query_list = []
+            for j in range(query_length):
+                query_list.append(query.split('&')[j].split('=')[0])
+            query_list.sort()
+            query_string = ''.join(query_list)
+            print query_string
+            query_value = hash(hashlib.new("md5", query_string).hexdigest()) % hash_size
+        else:
+            query_value = 0
+        netloc_value = hash(hashlib.new("md5", netloc).hexdigest()) % hash_size
+        url_value = hash(hashlib.new("md5", str(path_value + netloc_value + query_value)).hexdigest()) % hash_size
+        print url_value
+        return url_value
+    #query the url has insert to database
+    def url_hash(self, url):
+
+        urlhash = self.parse(url)
+        cx = sqlite3.connect("url.db")
+        cu = cx.cursor()
+        cu.execute("select *  from urlhash where hash = ?", urlhash)
+        if cu.fetchall():
+            return false
+        else:
+            cu.execute("insert into urlhash values ?", urlhash)
+            cx.commit()
+            return true
+
     def extract_request(self,url,method,headers,body):
         requests="%s %s\r\n"%(method,url)
         #print requests
@@ -159,50 +210,7 @@ class isqlmap:
             send_data={'key':taskid,'request':base64_encode(requests),'url':base64_encode(url),'userhash':headers['userhash']}
             self.send_info(self.webserver+"/api.php?type=sqlmap",send_data)          
         '''
-        def parse(self,url):
-            tmp = urlps(url)
-            scheme = tmp[0];netloc = tmp[1];path = tmp[2][1:]; query = tmp[4]
-            if len(path.split('/')[-1].split('.')) > 1:
-                tail = path.split('/')[-1].split('.')[-1]
-            elif len(path.split('/')) == 1 :
-                tail = path
-            else:
-                tail = '1'
-            tail = tail.lower()
-            path_length = len(path.split('/')) - 1
-            path_value = 0
-            path_list = path.split('/')[:-1] + [tail]
-            for i in range(path_length + 1):
-                if path_length -i ==0:
-                    path_value += hash(path_list[path_length - i])%98765
-                else:
-                    path_value += len(path_list[path_length - i])*(10**(i+1))
-            if len(query) > 0:
-                query_length = len(query.split('&'))
-                query_list = []
-                for j in range(query_length):
-                    query_list.append(query.split('&')[j].split('=')[0])
-                query_list.sort()
-                query_string = ''.join(query_list)
-                print query_string
-                query_value  = hash(hashlib.new("md5",query_string).hexdigest())%hash_size
-            else:
-                query_value = 0
-            netloc_value = hash(hashlib.new("md5",netloc).hexdigest())%hash_size
-            url_value = hash(hashlib.new("md5",str(path_value + netloc_value+query_value)).hexdigest())%hash_size
-            print url_value
-            return url_value
-        def url_hash(self,url):
-            urlhash = self.parse(url)
-            cx = sqlite3.connect("/Users/helit/test.db")
-            cu=cx.cursor()
-            cu.execute("select *  from urlhash where hash = ?",urlhash)
-            if cu.fetchall():
-                return false
-            else
-                cu.execute("insert into urlhash values ?", urlhash)
-                cx.commit()
-                return true
+
 
 
         
