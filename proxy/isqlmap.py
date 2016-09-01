@@ -173,11 +173,11 @@ class isqlmap:
         urlhash = self.parse(url)
         conn = MySQLdb.connect(host='localhost', user='sqlmap', passwd='root', db='pscan', port=3306)
         cur = conn.cursor()
-        cur.execute("select *  from urlhash where hash = ?", urlhash)
+        cur.execute("select *  from urlhash where hash = %s", urlhash)
         if cur.fetchall():
             return false
         else:
-            cur.execute("insert into urlhash values ?", (null,urlhash))
+            cur.execute("insert into urlhash(hash) values(%s)", (urlhash))
             conn.commit()
             return true
 
@@ -188,10 +188,11 @@ class isqlmap:
         if self.check_rule(url)==False:
             print "[*] Request is in Black"
             return 0
-        self.sqlmapapi=self.get_sqlmapapi()
         if self.url_hash(url)==false:
             print "[*] Request in recent"
             return 0
+        self.sqlmapapi=self.get_sqlmapapi()
+
         #FIX USERHASH IS NONE
         
         if 'userhash' not in str(headers.keys()).lower():
