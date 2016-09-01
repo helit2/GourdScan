@@ -194,6 +194,9 @@ if(@$_POST['action']=='add'){
 								<li>
 									<a href="api.php?type=sqlmap_clearvuls">Clear Vuls</a>
 								</li>
+								<li>
+									<a href="api.php?type=sqlmap_clearurlhash">Clear Urlhash</a>
+								</li>
 								
 					
 							</ul>

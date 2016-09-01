@@ -82,6 +82,10 @@ if($_GET['type']=='sqlmap_clear'){
     mysql_query("delete from sqlmap  where status  in ('Inject')  and userhash='{$hash}';");
 	mysql_query("delete from dirscan ;");
     exit();
+}if($_GET['type']=='sqlmap_clearurlhash'){
+    header("Location: index.php");
+    mysql_query("truncate table urlhash");
+    exit();
 }
 if($_GET['type']=='hash'){
     $key=addslashes($_GET['key']);
