@@ -159,27 +159,27 @@ class isqlmap:
                 query_list.append(query.split('&')[j].split('=')[0])
             query_list.sort()
             query_string = ''.join(query_list)
-            print query_string
             query_value = hash(hashlib.new("md5", query_string).hexdigest()) % hash_size
         else:
             query_value = 0
         netloc_value = hash(hashlib.new("md5", netloc).hexdigest()) % hash_size
         url_value = hash(hashlib.new("md5", str(path_value + netloc_value + query_value)).hexdigest()) % hash_size
-        print url_value
         return url_value
     #query the url has insert to database
     def url_hash(self, url):
-
         urlhash = self.parse(url)
-        conn = MySQLdb.connect(host='localhost', user='sqlmap', passwd='root', db='pscan', port=3306)
+        conn = MySQLdb.connect(host='localhost', user='sqlmap', passwd='', db='pscan', port=3306)
         cur = conn.cursor()
-        cur.execute("select *  from urlhash where hash = %s", urlhash)
-        if cur.fetchall():
-            return false
+        try:
+            result = cur.execute("select *  from urlhash where hash = (%s)" % urlhash)
+        except Exception, e:
+            print e
+        if result:
+            return False
         else:
-            cur.execute("insert into urlhash(hash) values(%s)", (urlhash))
+            cur.execute("insert into urlhash(hash) values (%s)" % urlhash)
             conn.commit()
-            return true
+            return True
 
     def extract_request(self,url,method,headers,body):
         requests="%s %s\r\n"%(method,url)
